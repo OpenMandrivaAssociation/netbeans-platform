@@ -93,7 +93,7 @@ find . -type f \( -iname "*.jar" -o -iname "*.zip" \) | xargs -t %{__rm} -f
 LNS="%{__ln_s}"
 MKDIRP="%{__mkdir_p}"
 JAVADIR="%{_javadir}"
-JAVADOCDIR="$RPM_BUILD_ROOT/%{_javadocdir}/netbeans-platform7"
+JAVADOCDIR="$RPM_BUILD_ROOT/%{_javadocdir}/netbeans-%{nbplatform}"
 RMF="%{__rm} -rf"
 INS="%{__cp} -r"
 NBDIR="$RPM_BUILD_ROOT/%{clusterdir}"
@@ -101,14 +101,14 @@ JHJAR=javahelp2.jar
 export LNS MKDIRP JAVADIR JAVADOCDIR RMF INS NBDIR JHJAR
 sh -x %{SOURCE1} setup 
 
-%patch0 -p1 -b .sav
+%patch0 -p0 -b .sav
 
 %build
 
 LNS="%{__ln_s}"
 MKDIRP="%{__mkdir_p}"
 JAVADIR="%{_javadir}"
-JAVADOCDIR="$RPM_BUILD_ROOT/%{_javadocdir}/netbeans-platform7"
+JAVADOCDIR="$RPM_BUILD_ROOT/%{_javadocdir}/netbeans-%{nbplatform}"
 RMF="%{__rm} -rf"
 INS="%{__cp} -r"
 NBDIR="$RPM_BUILD_ROOT/%{clusterdir}"
@@ -126,7 +126,7 @@ sh -x %{SOURCE1} build_javadoc || exit 1
 LNS="%{__ln_s}"
 MKDIRP="%{__mkdir_p}"
 JAVADIR="%{_javadir}"
-JAVADOCDIR="$RPM_BUILD_ROOT/%{_javadocdir}/netbeans-platform7"
+JAVADOCDIR="$RPM_BUILD_ROOT/%{_javadocdir}/netbeans-%{nbplatform}"
 RMF="%{__rm} -rf"
 INS="%{__cp} -r"
 NBDIR="$RPM_BUILD_ROOT/%{clusterdir}"
