@@ -29,6 +29,7 @@ BuildRequires:  ant-trax >= 0:1.6.3
 BuildRequires:	junit >= 0:3.8.1
 BuildRequires:	swing-layout >= 0:1.0
 BuildRequires:  javahelp2 >= 2.0.05
+BuildRequires:  jna >= 3.0
 Requires:       libnb-%{nbplatform} >= 6.1
 
 %description
@@ -46,6 +47,7 @@ Requires: 	java >= 0:1.6
 Requires:	jpackage-utils >= 0:1.5
 Requires:	swing-layout >= 0:1.0
 Requires:	javahelp2 >= 2.0.05
+Requires:       jna >= 3.0
 
 
 %description -n libnb-%{nbplatform}
