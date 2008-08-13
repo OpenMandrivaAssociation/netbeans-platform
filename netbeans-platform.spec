@@ -61,7 +61,7 @@ development of modular desktop applications.
 %package -n libnb-%{nbplatform}-javadoc
 Summary: Javadoc documentation for NetBeans Platform
 Group: Development/Java
-Requires:       lib-%{nbplatform} >= 2.0
+Requires:       libnb-%{nbplatform} >= 6.1
 
 %description -n libnb-%{nbplatform}-javadoc
 NetBeans Platform is a set of modules, each providing
@@ -75,8 +75,9 @@ javadoc to all of them.
 Summary: Build harness for NetBeans Platform
 Group: Development/Java
 Requires:   javahelp2 >= 2.0
-Requires:   lib-%{nbplatform} >= 2.0
-
+Requires:   libnb-%{nbplatform} >= 6.1
+Provides:   netbeans-platform8-harness = 6.1
+Provides:   libnb-platform8-harness = 6.1
 
 %description -n libnb-%{nbplatform}-devel
 Harness with build scripts and ant tasks for everyone who
