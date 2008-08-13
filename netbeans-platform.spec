@@ -78,6 +78,8 @@ Requires:   javahelp2 >= 2.0
 Requires:   libnb-%{nbplatform} >= 6.1
 Provides:   netbeans-platform8-harness = 6.1
 Provides:   libnb-platform8-harness = 6.1
+Obsoletes:  libnb-platform7-devel
+
 
 %description -n libnb-%{nbplatform}-devel
 Harness with build scripts and ant tasks for everyone who
