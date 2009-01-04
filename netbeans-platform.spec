@@ -76,9 +76,10 @@ Summary: Build harness for NetBeans Platform
 Group: Development/Java
 Requires:   javahelp2 >= 2.0
 Requires:   libnb-%{nbplatform} >= 6.5
-Provides:   netbeans-platform8-harness = 6.5
-Provides:   libnb-platform8-harness = 6.5
+Provides:   netbeans-platform9-harness = 6.5
+Provides:   libnb-platform9-harness = 6.5
 Obsoletes:  libnb-platform7-devel
+Obsoletes:  libnb-platform8-devel
 
 
 %description -n libnb-%{nbplatform}-devel
