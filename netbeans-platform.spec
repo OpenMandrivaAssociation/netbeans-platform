@@ -1,16 +1,16 @@
 Name:                   netbeans-platform
-Version:                6.1
-Release:                %mkrel 3
+Version:                6.5
+Release:                %mkrel 1
 %define section		devel
 %define source_top	%{name}-src
 %define netbeansdir     %{_datadir}/netbeans
 
 %define clusterdir      %{netbeansdir}
-%define nbplatform      platform8
+%define nbplatform      platform9
 
 Summary:	NetBeans Platform for Development of Rich Client Swing Applications Wrapper
 URL:		http://platform.netbeans.org
-Source0:	http://download.netbeans.org/netbeans/6.1/final/zip/netbeans-6.1-200804211638-platform-src.zip
+Source0:	http://download.netbeans.org/netbeans/6.5/final/zip/netbeans-6.5-200811100001-ml-platform-src.zip
 Source1: 	scripts.sh
 
 Patch0:         10-build.patch
@@ -22,15 +22,15 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildArch:	noarch
 BuildRequires:	java-devel >= 1.6.0
 BuildRequires:	java-rpmbuild >= 0:1.5
-BuildRequires:	ant >= 0:1.6.3
-BuildRequires:  ant-junit >= 1.6.3
-BuildRequires:  ant-nodeps >= 0:1.6.3
-BuildRequires:  ant-trax >= 0:1.6.3
-BuildRequires:	junit >= 0:3.8.1
+BuildRequires:	ant >= 0:1.7.1
+BuildRequires:  ant-junit >= 1.7.1
+BuildRequires:  ant-nodeps >= 0:1.7.1
+BuildRequires:  ant-trax >= 0:1.7.1
+BuildRequires:	junit4 >= 0:4.3
 BuildRequires:	swing-layout >= 0:1.0
 BuildRequires:  javahelp2 >= 2.0.05
 BuildRequires:  jna >= 3.0
-Requires:       libnb-%{nbplatform} >= 6.1
+Requires:       libnb-%{nbplatform} >= 6.5
 
 %description
 NetBeans Platform is a framework for development of 
@@ -61,7 +61,7 @@ development of modular desktop applications.
 %package -n libnb-%{nbplatform}-javadoc
 Summary: Javadoc documentation for NetBeans Platform
 Group: Development/Java
-Requires:       libnb-%{nbplatform} >= 6.1
+Requires:       libnb-%{nbplatform} >= 6.5
 
 %description -n libnb-%{nbplatform}-javadoc
 NetBeans Platform is a set of modules, each providing
@@ -75,9 +75,9 @@ javadoc to all of them.
 Summary: Build harness for NetBeans Platform
 Group: Development/Java
 Requires:   javahelp2 >= 2.0
-Requires:   libnb-%{nbplatform} >= 6.1
-Provides:   netbeans-platform8-harness = 6.1
-Provides:   libnb-platform8-harness = 6.1
+Requires:   libnb-%{nbplatform} >= 6.5
+Provides:   netbeans-platform8-harness = 6.5
+Provides:   libnb-platform8-harness = 6.5
 Obsoletes:  libnb-platform7-devel
 
 
