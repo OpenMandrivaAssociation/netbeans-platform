@@ -1,6 +1,6 @@
 Name:                   netbeans-platform
 Version:                6.5
-Release:                %mkrel 1
+Release:                %mkrel 2
 %define section		devel
 %define source_top	%{name}-src
 %define netbeansdir     %{_datadir}/netbeans
