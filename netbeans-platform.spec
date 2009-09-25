@@ -75,6 +75,7 @@ BuildRequires: asm2 >= 2.2.1
 BuildRequires: log4j >= 1.2.9
 BuildRequires: jakarta-oro >= 2.0.8
 BuildRequires: jemmy >= 2.3.0.0
+BuildRequires: java-rpmbuild >= 0:1.5.32
 
 Requires: jpackage-utils
 Requires: java >= 0:1.6.0
