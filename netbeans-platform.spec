@@ -38,7 +38,7 @@
 
 Name:         netbeans-platform
 Version:      %{nb_ver}
-Release:      %mkrel 1
+Release:      %mkrel 2
 Summary:      NetBeans Platform %{nb_platform_ver}
 Group:        Development/Java
 License:      GPLv2 with exceptions or CDDL
@@ -114,6 +114,8 @@ Requires: log4j >= 1.2.9
 Requires: jakarta-oro >= 2.0.8
 Requires: jemmy >= 2.3.0.0
 Obsoletes: netbeans-platform8-harness < 6.5
+Obsoletes: netbeans-platform9-harness < 6.7.1
+Conflicts: netbeans-platform9-harness 
 %description %{nb_harness}
 Harness with build scripts and ant tasks for everyone who
 build an application on top of NetBeans Platform
