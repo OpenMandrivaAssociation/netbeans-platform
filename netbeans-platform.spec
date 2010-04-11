@@ -2,14 +2,16 @@
 %define __jar_repack %{nil}
 
 %define nb_             netbeans
-%define nb_ver          6.7.1
-%define nb_release_time 200907230233
+%define nb_ver          6.8
+
+%define nb_release_time 200912041610
 %define nb_home         %{_datadir}/%{nb_}
 %define nb_dir          %{nb_home}/%{nb_ver}
 
-%define nb_platform_ver 10
+%define nb_platform_ver 11
 %define nb_platform     platform%{nb_platform_ver}
 %define nb_platform_dir %{nb_home}/%{nb_platform}
+%define nb_platform_vpkg %{nb_}-%{nb_platform}
 
 %define nb_harness      harness
 %define nb_harness_dir  %{nb_home}/%{nb_harness}
@@ -34,28 +36,29 @@
 # Links the system JAR
 # %1 - the sys jar
 # %2 - the symlink name/path (optional)
-%global lnSysJAR() %__ln_s -f %{_javadir}/%{1} %{2} && test -f %{_javadir}/%{1} ;
+%global lnSysJAR() if [ -f %{_javadir}/%{1} ] ; then  %__ln_s -f %{_javadir}/%{*} ; else echo "%{1} doesn't exist." ; exit 1 ; fi ;
 
 Name:         netbeans-platform
 Version:      %{nb_ver}
-Release:      %mkrel 2
+Release:      %mkrel 1
 Summary:      NetBeans Platform %{nb_platform_ver}
 Group:        Development/Java
 License:      GPLv2 with exceptions or CDDL
 URL:          http://platform.netbeans.org
 
-Source0: http://download.netbeans.org/%{nb_}/%{version}/final/zip/%{nb_}-%{version}-%{nb_release_time}-platform-src.zip
+#Source0: http://download.netbeans.org/%{nb_}/%{version}/final/zip/%{nb_}-%{version}-%{nb_release_time}-platform-src.zip
+Source0: http://bits.netbeans.org/netbeans/6.8/community/fcs/zip/netbeans-6.8-201004041201-platform-src.zip
 
 # Removes the copy actions for the windows launcher components
 # (*.exe *.dll) from the o.n.bootstrup/build.xml
-Patch0: %{name}-%{version}-build_bootstrap.patch
+Patch0: %{name}-%{version}~build_bootstrap.patch
 # Prevents from releasing zip files (swing-layout-1.0.3-doc.zip,
 # swing-layout-1.0.3-src.zip) in the o.jdesktop.layout module
-Patch1: %{name}-%{version}-properties.patch
+Patch1: %{name}-%{version}~properties.patch
 # openjdk-javac-6-b12.jar is needed only if JDK 1.5 is used, but we use JDK 1.6
-Patch2: %{name}-%{version}-javac.patch
+Patch2: %{name}-%{version}~javac.patch
 # Avoids spam in the log if the -XX:+HeapDumpOnOutOfMemoryError option is not supported by the JVM
-Patch3: %{name}-%{version}-launcher.patch
+Patch3: %{name}-%{version}~launcher.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -82,7 +85,8 @@ Requires: java >= 0:1.6.0
 Requires: swing-layout >= 1.0
 Requires: javahelp2 >= 2.0.05
 Requires: jna >= 3.0.9
-Obsoletes: netbeans-platform8 < 6.5
+
+Provides: %{nb_platform_vpkg} = %{version}-%{release}
 
 %description
 The NetBeans Platform is a generic framework for Swing applications. 
@@ -113,9 +117,6 @@ Requires: asm2 >= 2.2.1
 Requires: log4j >= 1.2.9
 Requires: jakarta-oro >= 2.0.8
 Requires: jemmy >= 2.3.0.0
-Obsoletes: netbeans-platform8-harness < 6.5
-Obsoletes: netbeans-platform9-harness < 6.7.1
-Conflicts: netbeans-platform9-harness 
 %description %{nb_harness}
 Harness with build scripts and ant tasks for everyone who
 build an application on top of NetBeans Platform
@@ -139,14 +140,21 @@ jar cf libs.jsr223/external/jsr223-api.jar libs.jsr223/src/javax/script/empty.ja
 %lnSysJAR jemmy.jar         jemmy/external/jemmy-2.3.0.0.jar
 %lnSysJAR jna.jar           libs.jna/external/jna-3.0.9.jar
 %lnSysJAR junit4.jar        libs.junit4/external/junit-4.5.jar
-%lnSysJAR swing-layout.jar  o.jdesktop.layout/external/swing-layout-1.0.3.jar
+%lnSysJAR swing-layout.jar  o.jdesktop.layout/external/swing-layout-1.0.4.jar
 pushd apisupport.harness/external
   %lnSysJAR javahelp2.jar jsearch-2.0_05.jar
   %lnSysJAR cobertura.jar cobertura-1.9.jar
-  %lnSysJAR asm2/asm2.jar      asm-2.2.1.jar
-  %lnSysJAR asm2/asm2-tree.jar asm-tree-2.2.1.jar
+  %lnSysJAR asm2/asm2.jar  asm-2.2.1.jar
+  %lnSysJAR asm2/asm2-tree.jar  asm-tree-2.2.1.jar
   %lnSysJAR log4j.jar     log4j-1.2.9.jar
   %lnSysJAR oro.jar       jakarta-oro-2.0.8.jar
+popd
+pushd apisupport.tc.cobertura/external
+  %lnSysJAR asm2/asm2.jar  asm-2.2.1.jar
+  %lnSysJAR asm2/asm2-tree.jar  asm-tree-2.2.1.jar
+  %lnSysJAR cobertura.jar cobertura-1.9.jar
+  %lnSysJAR oro.jar       jakarta-oro-2.0.8.jar
+  %lnSysJAR log4j.jar     log4j-1.2.9.jar
 popd
 
 %patch0 -p1
@@ -191,7 +199,7 @@ pushd %{buildroot}%{nb_platform_dir}/modules/ext
   %lnSysJAR javahelp2.jar    jh-2.0_05.jar
   %lnSysJAR jna.jar          jna-3.0.9.jar
   %lnSysJAR junit4.jar       junit-4.5.jar
-  %lnSysJAR swing-layout.jar swing-layout-1.0.3.jar
+  %lnSysJAR swing-layout.jar swing-layout-1.0.4.jar
 popd
 
 # install harness
@@ -206,8 +214,8 @@ pushd %{buildroot}%{nb_harness_dir}
   pushd testcoverage/cobertura
     %lnSysJAR cobertura.jar cobertura-1.9.jar
     pushd lib
-      %lnSysJAR asm2/asm2.jar      asm-2.2.1.jar
-      %lnSysJAR asm2/asm2-tree.jar asm-tree-2.2.1.jar
+      %lnSysJAR asm2/asm2.jar  asm-2.2.1.jar
+      %lnSysJAR asm2/asm2-tree.jar  asm-tree-2.2.1.jar
       %lnSysJAR oro.jar       jakarta-oro-2.0.8.jar
       %lnSysJAR log4j.jar     log4j-1.2.9.jar
     popd
@@ -266,4 +274,3 @@ popd
 %files %{nb_javadoc}
 %defattr(-,root,root,-)
 %doc %{nb_javadoc_dir}/
-
