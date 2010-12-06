@@ -40,7 +40,7 @@
 
 Name:         netbeans-platform
 Version:      %{nb_ver}
-Release:      %mkrel 1
+Release:      %mkrel 2
 Summary:      NetBeans Platform %{nb_platform_ver}
 Group:        Development/Java
 License:      GPLv2 with exceptions or CDDL
