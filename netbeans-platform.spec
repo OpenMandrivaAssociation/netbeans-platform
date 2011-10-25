@@ -2,16 +2,18 @@
 %define __jar_repack %{nil}
 
 %define nb_             netbeans
-%define nb_ver          6.8
+%define nb_major_ver    6.9
+%define nb_bugfix_ver   1
+%define nb_ver          %{nb_major_ver}.%{nb_bugfix_ver}
 
-%define nb_release_time 200912041610
+%define nb_release_time 201007282301
 %define nb_home         %{_datadir}/%{nb_}
-%define nb_dir          %{nb_home}/%{nb_ver}
+%define nb_dir          %{nb_home}/%{nb_major_ver}
 
-%define nb_platform_ver 11
-%define nb_platform     platform%{nb_platform_ver}
-%define nb_platform_dir %{nb_home}/%{nb_platform}
-%define nb_platform_vpkg %{nb_}-%{nb_platform}
+%define nb_platform_ver 12
+%define nb_platform     platform
+%define nb_platform_dir %{nb_home}/%{nb_platform}%{nb_platform_ver}
+%define nb_platform_vpkg %{nb_}-%{nb_platform}%{nb_platform_ver}
 
 %define nb_harness      harness
 %define nb_harness_dir  %{nb_home}/%{nb_harness}
@@ -30,37 +32,56 @@
 %define nbbuild_harness_dir nbbuild/netbeans/%{nb_harness}
 
 # Prevents use of autoupdate on the specified directory.
-# %1 the directory being prevented for autoupdate.
-%define noautoupdate()    echo > %1/.noautoupdate
+# %%{1} the directory being prevented for autoupdate.
+%define noautoupdate()  echo > %{1}/.noautoupdate
 
-# Links the system JAR
-# %1 - the sys jar
-# %2 - the symlink name/path (optional)
-%global lnSysJAR() if [ -f %{_javadir}/%{1} ] ; then  %__ln_s -f %{_javadir}/%{*} ; else echo "%{1} doesn't exist." ; exit 1 ; fi ;
+# Creates the time stamp of the last modification for the NetBeans cluster.
+# See:
+# http://bits.netbeans.org/dev/javadoc/org-netbeans-bootstrap/overview-summary.html#java.io.File-.lastModified
+# %%{1} the directory of the NetBeans cluster.
+%define lastModified()  echo > %{1}/.lastModified
+
+# Creates artifacts of the NetBeans cluster.
+# %%{1} the directory of the NetBeans cluster.
+%define nbCluster() %{expand:%%noautoupdate %{1}} ; %{expand:%%lastModified %{1}} ;
+
+# Links the system JAR.
+# %%{1} - the sys jar
+# %%{2} - the symlink name/path (optional)
+%global lnSysJAR() \
+  if [ -f %{_javadir}/%{1} ] ; then \
+     %__ln_s -f %{_javadir}/%{*} ; \
+  else \
+    echo "%{1} doesn't exist." ; exit 1 ; \
+  fi ;
+
+# Removes all specified files, and creates the file rmFiles.lst.
+# %%{1} - the iname value, e.g. "*.zip"
+%global rmFiles() find . -type f \\( -iname %{1} \\) | \
+                  tee -a ./rmFiles.lst | xargs -t %__rm -f ;
 
 Name:         netbeans-platform
 Version:      %{nb_ver}
-Release:      %mkrel 2
+Release:      2
 Summary:      NetBeans Platform %{nb_platform_ver}
-Group:        Development/Java
+Group:        Development/Java 
 License:      GPLv2 with exceptions or CDDL
 URL:          http://platform.netbeans.org
 
-#Source0: http://download.netbeans.org/%{nb_}/%{version}/final/zip/%{nb_}-%{version}-%{nb_release_time}-platform-src.zip
-Source0: http://bits.netbeans.org/netbeans/6.8/community/fcs/zip/netbeans-6.8-201004041201-platform-src.zip
+Source0: http://download.netbeans.org/%{nb_}/%{version}/final/zip/%{nb_}-%{version}-%{nb_release_time}-platform-src.zip
 
-# Removes the copy actions for the windows launcher components
+# Avoids copying the external binaries
 # (*.exe *.dll) from the o.n.bootstrup/build.xml
-Patch0: %{name}-%{version}~build_bootstrap.patch
-# Prevents from releasing zip files (swing-layout-1.0.3-doc.zip,
-# swing-layout-1.0.3-src.zip) in the o.jdesktop.layout module
-Patch1: %{name}-%{version}~properties.patch
-# openjdk-javac-6-b12.jar is needed only if JDK 1.5 is used, but we use JDK 1.6
-Patch2: %{name}-%{version}~javac.patch
+Patch0: %{name}-6.9~release_external.patch
+# Prevents from releasing zip files (swing-layout-1.0.4-doc.zip,
+# swing-layout-1.0.4-src.zip) in the o.jdesktop.layout module
+Patch1: %{name}-6.9~properties.patch
+# Avoids copying the external binaries in nbi module
+Patch2: %{name}-6.9~nbi.patch
 # Avoids spam in the log if the -XX:+HeapDumpOnOutOfMemoryError option is not supported by the JVM
-Patch3: %{name}-%{version}~launcher.patch
+# http://netbeans.org/bugzilla/show_bug.cgi?id=188283
+Patch3: %{name}-6.9~launcher.patch
 
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
 
 BuildRequires: jpackage-utils
@@ -73,31 +94,39 @@ BuildRequires: junit4 >= 4.5
 BuildRequires: swing-layout >= 1.0
 BuildRequires: javahelp2 >= 2.0.05
 BuildRequires: jna >= 3.0.9
-BuildRequires: cobertura >= 1.9
-BuildRequires: asm2 >= 2.2.1
+BuildRequires: cobertura >= 1.9.3
+BuildRequires: objectweb-asm >= 3.0
 BuildRequires: log4j >= 1.2.9
 BuildRequires: jakarta-oro >= 2.0.8
 BuildRequires: jemmy >= 2.3.0.0
-BuildRequires: java-rpmbuild >= 0:1.5.32
+BuildRequires: felix-osgi-core >= 1.4.0
+BuildRequires: felix-osgi-compendium >= 1.4.0
+BuildRequires: felix-main >= 2.0.5
+BuildRequires: felix-framework >= 2.0.5
+BuildRequires: bindex >= 2.2
 
 Requires: jpackage-utils
 Requires: java >= 0:1.6.0
+Requires: junit4 >= 4.5
 Requires: swing-layout >= 1.0
 Requires: javahelp2 >= 2.0.05
 Requires: jna >= 3.0.9
+Requires: felix-osgi-core >= 1.4.0
+Requires: felix-osgi-compendium >= 1.4.0
+Requires: felix-main >= 2.0.5
+Requires: felix-framework >= 2.0.5
 
 Provides: %{nb_platform_vpkg} = %{version}-%{release}
 
 %description
-The NetBeans Platform is a generic framework for Swing applications. 
-It provides the services common to almost all large desktop applications: 
-window management, menus, settings and storage, update management, file 
-access, etc.
+The NetBeans Platform, version %{nb_platform_ver}, is a generic framework 
+for Swing applications. It provides the services common to almost all 
+large desktop applications: window management, menus, settings and 
+storage, update management, file access, etc.
 
 %package %{nb_javadoc}
 Summary: Javadoc documentation for NetBeans Platform %{nb_platform_ver}
-Group: Development/Java
-Obsoletes: netbeans-platform8-javadoc < 6.5
+Group: Development/Java 
 %description %{nb_javadoc}
 NetBeans Platform is a set of modules, each providing
 their own APIs and working together or in a standalone
@@ -106,17 +135,18 @@ javadoc to all of them.
 
 %package %{nb_harness}
 Summary: Build harness for NetBeans Platform %{nb_platform_ver}
-Group: Development/Java
+Group: Development/Java 
 Requires: jpackage-utils
 Requires: java >= 0:1.6.0
 Requires: ant >= 1.7.0
 Requires: %{name} = %{version}-%{release}
 Requires: javahelp2 >= 2.0.05
-Requires: cobertura >= 1.9
-Requires: asm2 >= 2.2.1
+Requires: cobertura >= 1.9.3
+Requires: objectweb-asm >= 3.0
 Requires: log4j >= 1.2.9
 Requires: jakarta-oro >= 2.0.8
 Requires: jemmy >= 2.3.0.0
+Requires: bindex >= 2.2
 %description %{nb_harness}
 Harness with build scripts and ant tasks for everyone who
 build an application on top of NetBeans Platform
@@ -124,37 +154,37 @@ build an application on top of NetBeans Platform
 %prep
 %setup -q -c
 
-find . -type f \( -iname "*.jar" -o -iname "*.zip" \) | xargs -t %__rm -f
-find . -type f \( -iname "*.exe" \) | xargs -t %__rm -f
-find . -type f \( -iname "binaries-list" \) | xargs -t %__rm -f
+%rmFiles "*.jar"
+%rmFiles "*.zip"
+%rmFiles "*.exe"
+%rmFiles "*.dll"
+%rmFiles "binaries-list"
 
-# As of Java 6, JSR 223 is included in the JRE.
-# Generate the stub jar file, so there is something in jsr223 API module
-%__mkdir_p libs.jsr223/src/javax/script
-echo "package javax.script; class empty { }" > libs.jsr223/src/javax/script/empty.java
-%__mkdir_p libs.jsr223/external
-jar cf libs.jsr223/external/jsr223-api.jar libs.jsr223/src/javax/script/empty.java
-
-# To build the netbeans modules the installed jars will be used instead of pre-packaged ones
+# To build the netbeans modules the system JARs will be used instead of pre-packaged ones
 %lnSysJAR javahelp2.jar     javahelp/external/jh-2.0_05.jar
 %lnSysJAR jemmy.jar         jemmy/external/jemmy-2.3.0.0.jar
 %lnSysJAR jna.jar           libs.jna/external/jna-3.0.9.jar
 %lnSysJAR junit4.jar        libs.junit4/external/junit-4.5.jar
 %lnSysJAR swing-layout.jar  o.jdesktop.layout/external/swing-layout-1.0.4.jar
+
 pushd apisupport.harness/external
   %lnSysJAR javahelp2.jar jsearch-2.0_05.jar
-  %lnSysJAR cobertura.jar cobertura-1.9.jar
-  %lnSysJAR asm2/asm2.jar  asm-2.2.1.jar
-  %lnSysJAR asm2/asm2-tree.jar  asm-tree-2.2.1.jar
-  %lnSysJAR log4j.jar     log4j-1.2.9.jar
-  %lnSysJAR oro.jar       jakarta-oro-2.0.8.jar
+  %lnSysJAR bindex.jar bindex-2.2.jar
 popd
 pushd apisupport.tc.cobertura/external
-  %lnSysJAR asm2/asm2.jar  asm-2.2.1.jar
-  %lnSysJAR asm2/asm2-tree.jar  asm-tree-2.2.1.jar
-  %lnSysJAR cobertura.jar cobertura-1.9.jar
+  %lnSysJAR objectweb-asm/asm-all.jar asm-3.0.jar
+  %lnSysJAR objectweb-asm/asm-all.jar asm-tree-3.0.jar
+  %lnSysJAR cobertura.jar cobertura-1.9.3.jar
   %lnSysJAR oro.jar       jakarta-oro-2.0.8.jar
   %lnSysJAR log4j.jar     log4j-1.2.9.jar
+popd
+pushd libs.felix/external
+  %lnSysJAR felix/org.apache.felix.framework.jar felix-2.0.3.jar
+  %lnSysJAR felix/org.apache.felix.main.jar felix-main-2.0.2.jar
+popd
+pushd libs.osgi/external
+  %lnSysJAR felix/org.osgi.core.jar osgi.core-4.2.jar
+  %lnSysJAR felix/org.osgi.compendium.jar osgi.cmpn-4.2.jar
 popd
 
 %patch0 -p1
@@ -187,35 +217,40 @@ sendopts,options.api,editor.mimelookup \
 %__rm -f %{nbbuild_platform_dir}/modules/ext/script-api.jar
 
 %install
-%__rm -rf %{buildroot}
-
 # install platform
 %__mkdir_p %{buildroot}%{nb_platform_dir}
 %__cp -pr nbbuild/netbeans/%{nb_platform}/* %{buildroot}%{nb_platform_dir}
-%noautoupdate %{buildroot}%{nb_platform_dir}
+%nbCluster %{buildroot}%{nb_platform_dir}
 
 # linking the platform to the system JARs
 pushd %{buildroot}%{nb_platform_dir}/modules/ext
+  %lnSysJAR felix/org.apache.felix.framework.jar felix-2.0.3.jar
+  %lnSysJAR felix/org.apache.felix.main.jar felix-main-2.0.2.jar
   %lnSysJAR javahelp2.jar    jh-2.0_05.jar
   %lnSysJAR jna.jar          jna-3.0.9.jar
   %lnSysJAR junit4.jar       junit-4.5.jar
+  %lnSysJAR felix/org.osgi.compendium.jar osgi.cmpn-4.2.jar
+  %lnSysJAR felix/org.osgi.core.jar osgi.core-4.2.jar
   %lnSysJAR swing-layout.jar swing-layout-1.0.4.jar
 popd
 
 # install harness
 %__mkdir_p %{buildroot}%{nb_harness_dir}
 %__cp -pr nbbuild/netbeans/%{nb_harness}/* %{buildroot}%{nb_harness_dir}
-%noautoupdate %{buildroot}%{nb_harness_dir}
+%nbCluster %{buildroot}%{nb_harness_dir}
 
 # linking the harness to the system JARs
 pushd %{buildroot}%{nb_harness_dir}
-  %lnSysJAR javahelp2.jar antlib/jsearch-2.0_05.jar
-  %lnSysJAR jemmy.jar     modules/ext/jemmy-2.3.0.0.jar
+  pushd antlib
+    %lnSysJAR bindex.jar bindex-2.2.jar
+    %lnSysJAR javahelp2.jar jsearch-2.0_05.jar
+  popd
+  %lnSysJAR jemmy.jar modules/ext/jemmy-2.3.0.0.jar
   pushd testcoverage/cobertura
-    %lnSysJAR cobertura.jar cobertura-1.9.jar
+    %lnSysJAR cobertura.jar cobertura-1.9.3.jar
     pushd lib
-      %lnSysJAR asm2/asm2.jar  asm-2.2.1.jar
-      %lnSysJAR asm2/asm2-tree.jar  asm-tree-2.2.1.jar
+      %lnSysJAR objectweb-asm/asm-all.jar asm-3.0.jar
+      %lnSysJAR objectweb-asm/asm-all.jar asm-tree-3.0.jar
       %lnSysJAR oro.jar       jakarta-oro-2.0.8.jar
       %lnSysJAR log4j.jar     log4j-1.2.9.jar
     popd
@@ -227,8 +262,6 @@ popd
 %__mkdir_p %{buildroot}%{nb_javadoc_dir}
 %__cp -pr nbbuild/build/javadoc/* %{buildroot}%{nb_javadoc_dir}
 
-%clean
-%__rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
@@ -242,9 +275,12 @@ popd
 %attr(755, root, root) %{nb_platform_dir}/lib/nbexec
 %{nb_platform_dir}/lib/org-openide-modules.jar
 %{nb_platform_dir}/lib/org-openide-util.jar
+%{nb_platform_dir}/lib/org-openide-util-lookup.jar
 %{nb_platform_dir}/modules
 %{nb_platform_dir}/update_tracking
+%{nb_platform_dir}/VERSION.txt
 %{nb_platform_dir}/.noautoupdate
+%{nb_platform_dir}/.lastModified
 
 %files %{nb_harness}
 %defattr(-,root,root,-)
@@ -256,6 +292,7 @@ popd
 %dir %{nb_harness_dir}/launchers
 %attr(755, root, root) %{nb_harness_dir}/launchers/app.sh
 %{nb_harness_dir}/modules
+%{nb_harness_dir}/nbi
 %{nb_harness_dir}/testcoverage
 %{nb_harness_dir}/update_tracking
 %doc %{nb_harness_dir}/README
@@ -263,14 +300,18 @@ popd
 %{nb_harness_dir}/common.xml
 %{nb_harness_dir}/jdk.xml
 %{nb_harness_dir}/jnlp.xml
+%{nb_harness_dir}/no-testcoverage.xml
+%{nb_harness_dir}/osgi.xml
 %{nb_harness_dir}/run.xml
 %{nb_harness_dir}/suite.xml
 %{nb_harness_dir}/tasks.jar
-%{nb_harness_dir}/.noautoupdate
-%{nb_harness_dir}/no-testcoverage.xml
 %{nb_harness_dir}/testcoverage-suite.xml
 %{nb_harness_dir}/testcoverage.xml
+%{nb_harness_dir}/.noautoupdate
+%{nb_harness_dir}/.lastModified
 
 %files %{nb_javadoc}
 %defattr(-,root,root,-)
 %doc %{nb_javadoc_dir}/
+%doc nbbuild/licenses/CDDL-GPL-2-CP
+
