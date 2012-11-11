@@ -1,0 +1,12 @@
+diff -Nur netbeans-platform-6.9/o.jdesktop.layout/nbproject/project.properties netbeans-platform-6.9.new/o.jdesktop.layout/nbproject/project.properties
+--- netbeans-platform-6.9/o.jdesktop.layout/nbproject/project.properties	2010-05-31 20:58:16.000000000 +0400
++++ netbeans-platform-6.9.new/o.jdesktop.layout/nbproject/project.properties	2010-06-10 09:34:11.689150157 +0400
+@@ -42,6 +42,6 @@
+ 
+ is.autoload=true
+ release.external/swing-layout-1.0.4.jar=modules/ext/swing-layout-1.0.4.jar
+-release.external/swing-layout-1.0.4-doc.zip=docs/swing-layout-1.0.4-doc.zip
+-release.external/swing-layout-1.0.4-src.zip=docs/swing-layout-1.0.4-src.zip
++#release.external/swing-layout-1.0.4-doc.zip=docs/swing-layout-1.0.4-doc.zip
++#release.external/swing-layout-1.0.4-src.zip=docs/swing-layout-1.0.4-src.zip
+ jnlp.indirect.jars=docs/swing-layout-1.0.4-doc.zip, docs/swing-layout-1.0.4-src.zip

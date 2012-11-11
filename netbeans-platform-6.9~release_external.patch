@@ -1,0 +1,14 @@
+diff -Nur netbeans-platform-6.9/o.n.bootstrap/nbproject/project.properties netbeans-platform-6.9.new/o.n.bootstrap/nbproject/project.properties
+--- netbeans-platform-6.9/o.n.bootstrap/nbproject/project.properties	2010-05-31 20:58:20.000000000 +0400
++++ netbeans-platform-6.9.new/o.n.bootstrap/nbproject/project.properties	2010-06-09 06:00:01.324176694 +0400
+@@ -45,8 +45,8 @@
+ module.jar.dir=lib
+ module.jar.basename=boot.jar
+ release.launcher/unix/nbexec=lib/nbexec
+-release.launcher/windows/nbexec.exe=lib/nbexec.exe
+-release.launcher/windows/nbexec.dll=lib/nbexec.dll
++# release.launcher/windows/nbexec.exe=lib/nbexec.exe
++# release.launcher/windows/nbexec.dll=lib/nbexec.dll
+ nbm.executable.files=lib/nbexec
+ 
+ javadoc.arch=${basedir}/arch.xml

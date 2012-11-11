@@ -1,0 +1,12 @@
+diff -Nur netbeans-platform-6.9/o.n.bootstrap/launcher/unix/nbexec netbeans-platform-6.9.new/o.n.bootstrap/launcher/unix/nbexec
+--- netbeans-platform-6.9/o.n.bootstrap/launcher/unix/nbexec	2010-05-31 20:58:20.000000000 +0400
++++ netbeans-platform-6.9.new/o.n.bootstrap/launcher/unix/nbexec	2010-06-15 21:33:51.451147364 +0400
+@@ -192,7 +192,7 @@
+ fi
+ 
+ # if heap dump on OOME is supported enable it
+-if "${jdkhome}/bin/java" -XX:+HeapDumpOnOutOfMemoryError > /dev/null 2>&1 ; then
++if "${jdkhome}/bin/java" -XX:+HeapDumpOnOutOfMemoryError &> /dev/null 2>&1 ; then
+    jargs="$jargs -XX:+HeapDumpOnOutOfMemoryError"
+    if echo $jargs | grep -v -- "-XX:HeapDumpPath=" > /dev/null ; then
+       jargs="$jargs -XX:HeapDumpPath=\"${userdir}/var/log/heapdump.hprof\""

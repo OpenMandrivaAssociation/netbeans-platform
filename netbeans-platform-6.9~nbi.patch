@@ -1,0 +1,39 @@
+diff -Nur netbeans-platform-6.9/nbi/engine/build.xml netbeans-platform-6.9.new/nbi/engine/build.xml
+--- netbeans-platform-6.9/nbi/engine/build.xml	2010-05-31 20:58:10.000000000 +0400
++++ netbeans-platform-6.9.new/nbi/engine/build.xml	2010-06-11 00:19:36.246133118 +0400
+@@ -117,12 +117,14 @@
+ 	<mkdir dir="${build.classes.dir}/${native.dirname}/${native.jnilib.dir.solaris-x86}"/>
+ 	<mkdir dir="${build.classes.dir}/${native.dirname}/${native.jnilib.dir.macosx}"/>
+ 
++<!--
+         <copy file="${native.dirname}/${native.jnilib.dir.windows}/${native.dist.dir}/${native.jnilib.file.windows.i386}" 
+               todir="${build.classes.dir}/${native.dirname}/${native.jnilib.dir.windows}"/>
+         <copy file="${native.dirname}/${native.jnilib.dir.windows}/${native.dist.dir}/${native.jnilib.file.windows.amd64}" 
+               todir="${build.classes.dir}/${native.dirname}/${native.jnilib.dir.windows}"/>
+         <copy file="${native.dirname}/${native.jnilib.dir.windows}/${native.dist.dir}/${native.jnilib.file.windows.ia64}" 
+               todir="${build.classes.dir}/${native.dirname}/${native.jnilib.dir.windows}"/>
++-->
+         <copy file="${native.dirname}/${native.jnilib.dir.linux}/${native.dist.dir}/${native.jnilib.file.linux.i386}" 
+               todir="${build.classes.dir}/${native.dirname}/${native.jnilib.dir.linux}"/>
+ 	<copy file="${native.dirname}/${native.jnilib.dir.linux}/${native.dist.dir}/${native.jnilib.file.linux.amd64}" 
+@@ -141,7 +143,9 @@
+ 
+     <target name="copy-launchers">
+ 	
++<!--
+ 	<antcall target="copy-windows-launcher"/>	
++-->
+         <antcall target="copy-unix-launcher"/>
+ 	
+     </target>
+@@ -151,8 +155,10 @@
+ 	<mkdir dir="${build.classes.dir}/${native.dirname}/${native.cleaner.windows.dir}"/>
+ 	<mkdir dir="${build.classes.dir}/${native.dirname}/${native.cleaner.unix.dir}"/>
+ 
++<!--
+ 	<copy file="${native.dirname}/${native.cleaner.windows.srcdir}/${native.cleaner.windows.file}" 
+               todir="${build.classes.dir}/${native.dirname}/${native.cleaner.windows.dir}"/>
++-->
+ 	<copy file="${native.dirname}/${native.cleaner.unix.srcdir}/${native.cleaner.unix.file}" 
+               todir="${build.classes.dir}/${native.dirname}/${native.cleaner.unix.dir}"/>
+         
