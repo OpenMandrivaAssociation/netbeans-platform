@@ -66,7 +66,7 @@ Release:      4
 Summary:      NetBeans Platform %{nb_platform_ver}
 Group:        Development/Java 
 License:      GPLv2 with exceptions or CDDL
-URL:          http://platform.netbeans.org
+URL:          https://platform.netbeans.org
 
 Source0: http://download.netbeans.org/%{nb_}/%{version}/final/zip/%{nb_}-%{version}-%{nb_release_time}-platform-src.zip
 
